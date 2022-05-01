@@ -1,0 +1,224 @@
+\documentclass[UTF8,openany,AutoFakeBold,AutoFakeSlant,cs4size]{ctexbook}
+%openany 使一章可以从偶数页开始，因为说明中每一章并没有只能从奇数页开始，虽然这是常理
+%AutoFakeBold 和 AutoFakeSlant 因为 CJK 里没有真正的加粗和倾斜，如果额外字体则效果更好
+%cs4size 因为要求主题是小四号字
+
+%\usepackage[a4paper,left=5cm,right=0cm,top=2.5cm,bottom=2.5cm,twoside]{geometry}
+\usepackage[a4paper,left=2.5cm,right=2cm,top=2.5cm,bottom=2.5cm,twoside]{geometry}
+
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{amsfonts}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+
+\usepackage{cite}
+\newcommand{\upcite}[1]{\textsuperscript{\cite{#1}}} %引用在右上角
+
+\usepackage{multirow,booktabs,makecell}
+\usepackage{graphicx}
+\usepackage[font=small,labelsep=space]{caption} %五号，宋体/Time new roman
+%\renewcommand{\thetable}{\arabic{table}} %表格和图片编号不分章节，直接1，2，3 ...
+%\renewcommand{\thefigure}{\arabic{figure}}
+\renewcommand{\theequation}{\arabic{chapter}.\arabic{equation}} %公式标签 章.公式（均为阿拉伯数字）
+
+\usepackage{tocloft} %自定义目录，说明中没有明确规定，和WORD自动生成目录格式一致
+
+%“全文目录”四个字的格式
+\renewcommand\cftbeforetoctitleskip{0pt}
+\renewcommand\cftaftertoctitleskip{0pt}
+\renewcommand\cfttoctitlefont{\bfseries\heiti\zihao{2}}
+
+\renewcommand\cftchapfont{\heiti\normalsize} %黑体小四
+\renewcommand\cftchapdotsep{\cftdotsep} %有点连到页码，点间距不确定，待改
+\renewcommand\cftchappagefont{\songti\normalsize} %宋体小四页码
+\renewcommand\cftbeforechapskip{0pt}
+
+%1. 第一级 五号宋体，缩进两个字符，页码一致
+\renewcommand\cftsecfont{\songti\small}
+\renewcommand\cftsecpagefont{\songti\small}
+\renewcommand\cftsecaftersnum{.} %一级目录号后加点
+\renewcommand\cftsecindent{2em}
+\renewcommand\cftbeforesecskip{0pt}
+
+%1.1 第二级 五号宋体，缩进四个字符，页码一致
+\renewcommand\cftsubsecfont{\songti\small}
+\renewcommand\cftsubsecpagefont{\songti\small}
+\renewcommand\cftsubsecindent{4em}
+\renewcommand\cftbeforesubsecskip{0pt}
+
+%1.1.1 第二级 五号宋体，缩进四个字符，页码一致
+\renewcommand\cftsubsubsecfont{\songti\small}
+\renewcommand\cftsubsubsecpagefont{\songti\small}
+\renewcommand\cftsubsubsecindent{4em}
+\renewcommand\cftbeforesubsubsecskip{0pt}
+
+\usepackage{titlesec}%自定义章节标题
+\CTEXsetup[format={\center\heiti\zihao{3}},beforeskip=0pt]{chapter}
+%第一章  绪论（二号、黑体） beforeskip为上方垂直距离看起来还比说明偏大，待改
+
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+%使目录中有三级标题，即subsubsection
+
+%\renewcommand\thesection{\arabic{section}} % 使得不显示章名你妈呀
+\titleformat{\section}
+{\raggedright\zihao{3}\songti}
+{\thesection\quad}
+{0pt}
+{}%1. 第一级（三号、宋体/Time new roman、加粗你妈）
+
+\titleformat{\subsection}
+{\raggedright\zihao{4}\songti}
+{\thesubsection\quad}
+{0pt}
+{}%1.1 第二级（四号，宋体/Time new roman，加粗你妈）
+
+\titleformat{\subsubsection}
+{\raggedright\zihao{-4}\songti}
+{\thesubsubsection\quad}
+{0pt}
+{}%1.1.1 第三级（小四，宋体/Time new roman，加粗你妈）
+
+% 封面依赖的宏包
+\input{head/CoverHead}
+% 评阅表依赖的宏包
+\input{head/ReviewTableHead}
+
+\input{includes}
+\input{macros}
+
+\title{}
+\author{}
+\date{}
+
+\begin{document}
+
+% 插入封面
+\input{head/cover}
+\clearpage
+
+% 插入导师评阅表
+\input{head/ReviewTable}
+\clearpage
+
+\linespread{1.5}\selectfont
+\chapter*{版权声明}
+% 本页不计页码
+\thispagestyle{empty}
+% 本页无页眉和页脚
+任何收存和保管本论文各种版本的单位和个人，未经本论文作者同意，不得将本论文转借他人，亦不得随意复制、抄录、拍照或以任何方式传播。否则，引起有碍作者著作权之问题，将可能承担法律责任。
+\clearpage
+
+%版权声明后空白你妈一页，使得摘要从奇数页开始。
+%\quad
+% 本页不计页码
+%\thispagestyle{empty}
+% 本页无页眉和页脚
+%\clearpage
+
+\normalsize
+\linespread{1.5}\selectfont
+%小四号，宋体/Time new roman，1.5倍行距
+\input{chapters/0_abstract_cn}
+\thispagestyle{empty}
+\clearpage
+
+\small
+\linespread{1.5}\selectfont
+%5号，Time new roman，1.5倍行距
+\input{chapters/0_abstract_en}
+\thispagestyle{empty}
+\clearpage
+
+\chapter*{目录}
+\renewcommand{\contentsname}{}
+\tableofcontents
+\thispagestyle{empty}
+%\addcontentsline{toc}{chapter}{全文目录}
+\clearpage
+
+\normalsize
+\linespread{1.5}\selectfont
+%正文，小四号，中文宋体，英文Time new roman，1.5倍行距
+\fancypagestyle{plain} %因为latex默认每章第一页是plain所以需要重置一下plain和说明统一
+{
+	\fancyhf{}
+    \chead{\chineseTitleA\chineseTitleB}
+	\cfoot{第\thepage{}页}
+	\renewcommand{\headrulewidth}{0.7pt}
+	\renewcommand{\footrulewidth}{0pt}
+}
+
+%默认的风格是fancy，设置于下，用于每章非第一页
+\fancyhf{}
+\chead{\chineseTitleA\chineseTitleB}
+\cfoot{第\thepage{}页}
+\renewcommand{\headrulewidth}{0.7pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\setcounter{page}{1}
+
+\input{chapters/1_introduction}
+\input{chapters/2_motivation}
+\input{chapters/3_conclusion}
+
+\small
+\linespread{1}\selectfont
+%正文，五号，中文宋体，英文Time new roman，1倍行距
+\addcontentsline{toc}{chapter}{参考文献}
+\bibliographystyle{unsrt}
+\bibliography{bib/base}
+
+\clearpage
+
+% \linespread{1}\selectfont
+% \normalsize
+% %小四号，中文宋体，英文Time new roman，1倍行距
+% \chapter*{本科期间的主要工作和成果}
+
+% \noindent 本科期间参加的主要科研项目
+
+% \noindent 本研基金
+% \begin{enumerate}
+% 	\item 基金名称. 基金类型. 指导老师. 基金支持年限
+% \end{enumerate}
+
+% \noindent 各种科研项目
+% \begin{enumerate}
+% 	\item 项目名称. 项目类型
+% \end{enumerate}
+
+% \addcontentsline{toc}{chapter}{本科期间的主要工作和成果}
+% \fancypagestyle{plain}
+% {
+% 	\fancyhf{}
+% 	\fancyhead[RE,RO]{本科期间的主要工作和成果}
+% 	\fancyhead[LE,LO]{北京大学本科生毕业论文}
+% 	\fancyfoot[CO,CE]{~\thepage~}
+% 	\renewcommand{\headrulewidth}{0.7pt}
+% 	\renewcommand{\footrulewidth}{0pt}
+% }
+% \fancyhf{}
+% \fancyhead[RE,RO]{本科期间的主要工作和成果}
+% \fancyhead[LE,LO]{北京大学本科生毕业论文}
+% \fancyfoot[CO,CE]{~\thepage~}
+% \renewcommand{\headrulewidth}{0.7pt}
+% \renewcommand{\footrulewidth}{0pt}
+% \clearpage
+
+\linespread{1.5}\selectfont
+\normalsize
+%正文，小四号，中文宋体，英文Time new roman，1.5倍行距
+\chapter*{致谢}
+\addcontentsline{toc}{chapter}{致谢}
+
+\input{chapters/90_ack}
+\clearpage
+
+\chapter*{北京大学学位论文原创性声明和使用授权说明}
+\addcontentsline{toc}{chapter}{北京大学学位论文原创性声明和使用授权说明}
+\input{head/honor}
+\thispagestyle{empty}
+
+\end{document}
