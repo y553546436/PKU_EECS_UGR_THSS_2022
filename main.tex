@@ -94,6 +94,8 @@
 
 \begin{document}
 
+\pagenumbering{gobble}
+
 % 插入封面
 \input{head/cover}
 \clearpage
@@ -104,9 +106,6 @@
 
 \linespread{1.5}\selectfont
 \chapter*{版权声明}
-% 本页不计页码
-\thispagestyle{empty}
-% 本页无页眉和页脚
 任何收存和保管本论文各种版本的单位和个人，未经本论文作者同意，不得将本论文转借他人，亦不得随意复制、抄录、拍照或以任何方式传播。否则，引起有碍作者著作权之问题，将可能承担法律责任。
 \clearpage
 
@@ -121,22 +120,20 @@
 \linespread{1.5}\selectfont
 %小四号，宋体/Time new roman，1.5倍行距
 \input{chapters/0_abstract_cn}
-\thispagestyle{empty}
 \clearpage
 
 \small
 \linespread{1.5}\selectfont
 %5号，Time new roman，1.5倍行距
 \input{chapters/0_abstract_en}
-\thispagestyle{empty}
 \clearpage
 
 \chapter*{目录}
 \renewcommand{\contentsname}{}
 \tableofcontents
-\thispagestyle{empty}
 %\addcontentsline{toc}{chapter}{全文目录}
 \clearpage
+\pagenumbering{arabic}
 
 \normalsize
 \linespread{1.5}\selectfont
