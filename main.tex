@@ -132,8 +132,11 @@
 \renewcommand{\contentsname}{}
 \tableofcontents
 %\addcontentsline{toc}{chapter}{全文目录}
-\clearpage
+
+% xmcp: 正文页码从1开始，因此要确保前面是偶数页，不然奇偶页的边距就乱了
+\cleardoublepage
 \pagenumbering{arabic}
+\setcounter{page}{1}
 
 \normalsize
 \linespread{1.5}\selectfont
@@ -154,12 +157,12 @@
 	\renewcommand{\footrulewidth}{0pt}
 }
 
-\setcounter{page}{1}
 \pagestyle{pku}
 
 \input{chapters/1_introduction}
 \input{chapters/2_motivation}
 \input{chapters/3_conclusion}
+% add following chapters here
 
 \small
 \linespread{1}\selectfont
