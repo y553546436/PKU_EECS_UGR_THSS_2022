@@ -29,28 +29,35 @@
 \renewcommand\cftaftertoctitleskip{0pt}
 \renewcommand\cfttoctitlefont{\bfseries\heiti\zihao{2}}
 
-\renewcommand\cftchapfont{\heiti\normalsize} %黑体小四
-\renewcommand\cftchapdotsep{\cftdotsep} %有点连到页码，点间距不确定，待改
-\renewcommand\cftchappagefont{\songti\normalsize} %宋体小四页码
+\cftsetpnumwidth{1em}
+
+\renewcommand\cftchapfont{\heiti\small} %黑体小四你妈
+\renewcommand\cftchapleader{\cftdotfill{\cftchapdotsep}}
+\renewcommand\cftchapdotsep{1}
+\setlength{\cftchapnumwidth}{1em}
+\renewcommand\cftchappagefont{\songti\small}
 \renewcommand\cftbeforechapskip{0pt}
 
-%1. 第一级 五号宋体，缩进两个字符，页码一致
 \renewcommand\cftsecfont{\songti\small}
+\renewcommand\cftsecdotsep{1}
+\setlength{\cftsecnumwidth}{1em}
 \renewcommand\cftsecpagefont{\songti\small}
-\renewcommand\cftsecaftersnum{.} %一级目录号后加点
-\renewcommand\cftsecindent{2em}
+%\renewcommand\cftsecaftersnum{.} %一级目录号后加点你妈
+\renewcommand\cftsecindent{1em}
 \renewcommand\cftbeforesecskip{0pt}
 
-%1.1 第二级 五号宋体，缩进四个字符，页码一致
 \renewcommand\cftsubsecfont{\songti\small}
+\renewcommand\cftsubsecdotsep{1}
+\setlength{\cftsubsecnumwidth}{1em}
 \renewcommand\cftsubsecpagefont{\songti\small}
-\renewcommand\cftsubsecindent{4em}
+\renewcommand\cftsubsecindent{2em}
 \renewcommand\cftbeforesubsecskip{0pt}
 
-%1.1.1 第二级 五号宋体，缩进四个字符，页码一致
 \renewcommand\cftsubsubsecfont{\songti\small}
+\renewcommand\cftsubsubsecdotsep{1}
+\setlength{\cftsubsubsecnumwidth}{1em}
 \renewcommand\cftsubsubsecpagefont{\songti\small}
-\renewcommand\cftsubsubsecindent{4em}
+\renewcommand\cftsubsubsecindent{3em}
 \renewcommand\cftbeforesubsubsecskip{0pt}
 
 \usepackage{titlesec}%自定义章节标题
