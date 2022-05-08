@@ -17,6 +17,16 @@
 %\renewcommand{\thefigure}{\arabic{figure}}
 \renewcommand{\theequation}{\arabic{chapter}.\arabic{equation}} %公式标签 章.公式（均为阿拉伯数字）
 
+% below: circled footnote symbols
+\usepackage{pifont}
+\usepackage[perpage,symbol*]{footmisc}
+\DefineFNsymbols{circled}{{\ding{192}}{\ding{193}}{\ding{194}}{\ding{195}}{\ding{196}}{\ding{197}}{\ding{198}}{\ding{199}}{\ding{200}}{\ding{201}}}
+\setfnsymbol{circled}
+% below: normal number size in footnote
+\makeatletter
+\long\def\@makefntext#1{\noindent{{\@thefnmark}\enskip #1}}
+\makeatother
+
 \usepackage{tocloft} %自定义目录，说明中没有明确规定，和WORD自动生成目录格式一致
 
 %“全文目录”四个字的格式
