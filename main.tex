@@ -1,5 +1,4 @@
 \documentclass[UTF8,openany,AutoFakeBold,zihao=-4]{ctexbook}
-%openany 使一章可以从偶数页开始，因为说明中每一章并没有只能从奇数页开始，虽然这是常理
 
 %\usepackage[a4paper,left=5cm,right=0cm,top=2.5cm,bottom=2.5cm,twoside]{geometry}
 \usepackage[a4paper,left=2.5cm,right=2cm,top=2.5cm,bottom=2.5cm,twoside]{geometry}
@@ -29,14 +28,16 @@
 
 \usepackage{tocloft} %自定义目录，说明中没有明确规定，和WORD自动生成目录格式一致
 
-%“全文目录”四个字的格式
+%“目录”两个字的格式
 \renewcommand\cftbeforetoctitleskip{0pt}
 \renewcommand\cftaftertoctitleskip{0pt}
 \renewcommand\cfttoctitlefont{\bfseries\heiti\zihao{2}}
 
+% below: toc styles
+
 \cftsetpnumwidth{1em}
 
-\renewcommand\cftchapfont{\heiti\small} %黑体小四你妈
+\renewcommand\cftchapfont{\heiti\small}
 \renewcommand\cftchapleader{\cftdotfill{\cftchapdotsep}}
 \renewcommand\cftchapdotsep{1}
 \setlength{\cftchapnumwidth}{1em}
@@ -47,7 +48,6 @@
 \renewcommand\cftsecdotsep{1}
 \setlength{\cftsecnumwidth}{1em}
 \renewcommand\cftsecpagefont{\songti\small}
-%\renewcommand\cftsecaftersnum{.} %一级目录号后加点你妈
 \renewcommand\cftsecindent{1em}
 \renewcommand\cftbeforesecskip{0pt}
 
@@ -72,34 +72,17 @@
         beforeskip=0pt 
     }
 }
-%第一章  绪论（二号、黑体） beforeskip为上方垂直距离看起来还比说明偏大，待改
 
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
 %使目录中有三级标题，即subsubsection
 
-%\renewcommand\thesection{\arabic{section}} % 使得不显示章名你妈呀
-\titleformat{\section}
-{\raggedright\zihao{3}\songti}
-{\thesection\quad}
-{0pt}
-{}%1. 第一级（三号、宋体/Time new roman、加粗你妈）
+% below: section title fonts
+\titleformat{\section}{\raggedright\zihao{3}\songti}{\thesection\quad}{0pt}{}
+\titleformat{\subsection}{\raggedright\zihao{4}\songti}{\thesubsection\quad}{0pt}{}
+\titleformat{\subsubsection}{\raggedright\zihao{-4}\songti}{\thesubsubsection\quad}{0pt}{}
 
-\titleformat{\subsection}
-{\raggedright\zihao{4}\songti}
-{\thesubsection\quad}
-{0pt}
-{}%1.1 第二级（四号，宋体/Time new roman，加粗你妈）
-
-\titleformat{\subsubsection}
-{\raggedright\zihao{-4}\songti}
-{\thesubsubsection\quad}
-{0pt}
-{}%1.1.1 第三级（小四，宋体/Time new roman，加粗你妈）
-
-% 封面依赖的宏包
 \input{head/CoverHead}
-% 评阅表依赖的宏包
 \input{head/ReviewTableHead}
 
 \input{includes}
@@ -111,6 +94,7 @@
 
 \begin{document}
 
+% no page numbers until main content (later)
 \pagenumbering{gobble}
 
 % 插入封面
@@ -126,34 +110,26 @@
 任何收存和保管本论文各种版本的单位和个人，未经本论文作者同意，不得将本论文转借他人，亦不得随意复制、抄录、拍照或以任何方式传播。否则，引起有碍作者著作权之问题，将可能承担法律责任。
 \clearpage
 
-%版权声明后空白你妈一页，使得摘要从奇数页开始。
-%\quad
-% 本页不计页码
-%\thispagestyle{empty}
-% 本页无页眉和页脚
-%\clearpage
-
 \normalsize
-\linespread{1.5}\selectfont
-%小四号，宋体/Time new roman，1.5倍行距
+\linespread{1.5}\selectfont %小四号，宋体/Time new roman，1.5倍行距
 \input{chapters/0_abstract}
 \clearpage
 
 \chapter*{目录}
 \renewcommand{\contentsname}{}
 \tableofcontents
-%\addcontentsline{toc}{chapter}{全文目录}
 
-% xmcp: 正文页码从1开始，因此要确保前面是偶数页，不然奇偶页的边距就乱了
+% 正文页码从1开始，因此要确保前面是偶数页，不然奇偶页的边距就乱了
 \cleardoublepage
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
 \normalsize
-\linespread{1.5}\selectfont
-%正文，小四号，中文宋体，英文Time new roman，1.5倍行距
+\linespread{1.5}\selectfont %正文，小四号，中文宋体，英文Time new roman，1.5倍行距
 
-\fancypagestyle{plain} {
+% below: page headers and footers
+
+\fancypagestyle{plain} { % \chapter{} resets page style to plain for the first page
 	\fancyhf{}
     \chead{\chineseTitleA\chineseTitleB}
 	\cfoot{第\thepage{}页}
@@ -173,57 +149,18 @@
 \input{chapters/1_introduction}
 \input{chapters/2_motivation}
 \input{chapters/3_conclusion}
-% add following chapters here
+% [ ADD FOLLOWING CHAPTERS HERE ]
 
 \clearpage
 
 \small
-\linespread{1}\selectfont
-%正文，五号，中文宋体，英文Time new roman，1倍行距
+\linespread{1}\selectfont %正文，五号，中文宋体，英文Time new roman，1倍行距
 \addcontentsline{toc}{chapter}{参考文献}
 \bibliographystyle{unsrt}
 \bibliography{bib/base}
-
 \clearpage
 
-% \linespread{1}\selectfont
-% \normalsize
-% %小四号，中文宋体，英文Time new roman，1倍行距
-% \chapter*{本科期间的主要工作和成果}
-
-% \noindent 本科期间参加的主要科研项目
-
-% \noindent 本研基金
-% \begin{enumerate}
-% 	\item 基金名称. 基金类型. 指导老师. 基金支持年限
-% \end{enumerate}
-
-% \noindent 各种科研项目
-% \begin{enumerate}
-% 	\item 项目名称. 项目类型
-% \end{enumerate}
-
-% \addcontentsline{toc}{chapter}{本科期间的主要工作和成果}
-% \fancypagestyle{plain}
-% {
-% 	\fancyhf{}
-% 	\fancyhead[RE,RO]{本科期间的主要工作和成果}
-% 	\fancyhead[LE,LO]{北京大学本科生毕业论文}
-% 	\fancyfoot[CO,CE]{~\thepage~}
-% 	\renewcommand{\headrulewidth}{0.7pt}
-% 	\renewcommand{\footrulewidth}{0pt}
-% }
-% \fancyhf{}
-% \fancyhead[RE,RO]{本科期间的主要工作和成果}
-% \fancyhead[LE,LO]{北京大学本科生毕业论文}
-% \fancyfoot[CO,CE]{~\thepage~}
-% \renewcommand{\headrulewidth}{0.7pt}
-% \renewcommand{\footrulewidth}{0pt}
-% \clearpage
-
-\linespread{1.5}\selectfont
-\normalsize
-%正文，小四号，中文宋体，英文Time new roman，1.5倍行距
+\linespread{1.5}\selectfont\normalsize %正文，小四号，中文宋体，英文Time new roman，1.5倍行距
 \chapter*{致谢}
 \addcontentsline{toc}{chapter}{致谢}
 
