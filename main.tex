@@ -1,7 +1,16 @@
-\documentclass[UTF8,openany,AutoFakeBold,zihao=-4]{ctexbook}
+\documentclass[UTF8,openany,AutoFakeBold,zihao=-4,screen]{ctexbook}
+% ↑ 打印前去除screen选项，以应用奇偶页不对称（装订线5mm）的排版效果
 
-%\usepackage[a4paper,left=5cm,right=0cm,top=2.5cm,bottom=2.5cm,twoside]{geometry}
-\usepackage[a4paper,left=2.5cm,right=2cm,top=2.5cm,bottom=2.5cm,twoside]{geometry}
+\makeatletter
+\newif\ifscreen
+\@ifclasswith{ctexbook}{screen}{\screentrue}{\screenfalse}
+\makeatother
+
+\ifscreen
+    \usepackage[a4paper,left=2.25cm,right=2.25cm,top=2.5cm,bottom=2.5cm]{geometry}
+\else
+    \usepackage[a4paper,left=2.5cm,right=2cm,top=2.5cm,bottom=2.5cm,twoside]{geometry}
+\fi
 
 \usepackage{amsmath}
 \usepackage{bm}

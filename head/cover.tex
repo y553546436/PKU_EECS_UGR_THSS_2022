@@ -14,6 +14,7 @@
 \NewCoffin \majorText
 \NewCoffin \advisorText
 \NewCoffin \dateText
+\NewCoffin \footnoteText
 
 % 各个Coffin的内容
 \SetHorizontalCoffin \result {}
@@ -33,6 +34,9 @@
 \SetVerticalCoffin \advisorText{114mm}{\center\heiti\fontsize{16}{16}\textcolor{black}{导师姓名：\underline{\makebox[86mm][c]{\kaiti{\advisor}}}}}
 \SetVerticalCoffin \dateText{114mm}{\center\heiti\fontsize{18}{18}\textcolor{black}二\hspace{-2pt}\raisebox{-2pt}{\huge 〇}\hspace{-2pt}二二年六月}
 
+% 打印前请去除main.tex中documentclass的screen选项，以应用奇偶页不对称（装订线5mm）的排版效果
+% 去除后将不再显示(screen)
+\SetVerticalCoffin \footnoteText{114mm}{\center\colorbox{yellow}{(screen)}}
 
 % 指定各个Coffin相对位置关系
 \JoinCoffins \result \topBox
@@ -49,10 +53,17 @@
 \JoinCoffins \result[\schoolText-hc, \schoolText-b] \majorText[hc, t](0mm, 0mm)
 \JoinCoffins \result[\majorText-hc, \majorText-b] \advisorText[hc, t](0mm, 0mm)
 \JoinCoffins \result[\advisorText-hc, \advisorText-b] \dateText[hc, t](0mm, -40mm)
+\ifscreen
+    \JoinCoffins \result[\advisorText-hc, \advisorText-b] \footnoteText[hc, t](0mm, -30mm)
+\fi
 
 
 % 输出封面
 \thispagestyle{empty}
-\newgeometry{left=.25cm, bottom=0mm, top=0mm, right=0mm}
+\ifscreen
+    \newgeometry{left=0cm, bottom=0mm, top=0mm, right=0mm}
+\else
+    \newgeometry{left=2.5mm, bottom=0mm, top=0mm, right=0mm}
+\fi
 \noindent\TypesetCoffin \result
 \restoregeometry
