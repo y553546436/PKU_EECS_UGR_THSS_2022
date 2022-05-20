@@ -12,6 +12,29 @@
     \usepackage[a4paper,left=2.5cm,right=2cm,top=2.5cm,bottom=2.5cm,twoside]{geometry}
 \fi
 
+\makeatletter
+\def\emptypage@emptypage{%
+    \hbox{}%
+     \vspace*{\fill}
+     \begin{center}
+        % 打印前请去除documentclass的screen选项，去除后将不再显示此文字
+        \ifscreen{\small（此页为空白页）}\fi
+     \end{center}
+     \vspace{\fill}
+     \newpage%
+}%
+\def\cleardoublepage{%
+        \clearpage%
+        \if@twoside%
+            \ifodd\c@page%
+                % do nothing
+            \else%
+                \emptypage@emptypage%
+            \fi%
+        \fi%
+    }%
+\makeatother
+
 \usepackage{amsmath}
 \usepackage{bm}
 \usepackage{amsfonts}
