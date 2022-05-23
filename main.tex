@@ -51,6 +51,12 @@
 %\renewcommand{\thefigure}{\arabic{figure}}
 \renewcommand{\theequation}{\arabic{chapter}.\arabic{equation}} %公式标签 章.公式（均为阿拉伯数字）
 
+\ifscreen
+    \usepackage[colorlinks,allcolors=violet]{hyperref}
+\else
+    \usepackage[hidelinks]{hyperref}
+\fi
+
 \usepackage{enumitem}
 \setlist{nosep}
 \setlist[1]{leftmargin=3em}
@@ -156,7 +162,7 @@
 
 \chapter*{目录}
 \renewcommand{\contentsname}{}
-\tableofcontents
+{\hypersetup{linkcolor=black} \tableofcontents}
 
 % 正文页码从1开始，因此要确保前面是偶数页，不然奇偶页的边距就乱了
 \cleardoublepage
