@@ -10,6 +10,12 @@
 \newcommand{\advisorAffiliation}{偶像同好会}
 \newcommand{\advisorTitle}{永远的神}
 
+% 打印前请去除main.tex中documentclass的screen选项，以应用奇偶页不对称（装订线5mm）的排版效果
+% 去除后将不再显示此内容
+\newcommand{\buildInfo}{\center\colorbox{yellow}{build \today{} at \DTMcurrenttime{}, screen mode}}
+% 或者可以这样保留screen选项并不显示此内容：
+%\renewcommand{\buildInfo}{}
+
 \newcommand{\advisorComment}{
 % ↓ adjust total height below
 \begin{minipage}[t][15cm][t]{\linewidth-2em}
