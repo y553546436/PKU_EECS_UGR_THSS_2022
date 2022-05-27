@@ -1,8 +1,58 @@
-\chapter{引言}
+\chapter{引言}\label{sec:introduction}
 
+软件开发人员通常通过运行测试来检查他们的代码。
+\emph{回归测试}~\cite{Yoo2012H}是在代码修改后运行的，以检查这些修改是否破坏了现有功能。
+如果测试在修改前通过，但在修改后失败，这意味着应该对修改进行调试（除非测试是不稳定的~\cite{LuoHEM2014}）。
+更快地找到测试失败的原因，可以让开发人员更快开始调试。
+
+一种流行的回归测试方法是：\emph{测试用例排序（Regression Test Prioritization，简称RTP）}~\cite{Elbaum2000MR,Jiang2009ZCT,rothermel2001prioritizing,kim2002history,Rummel2005KT,Yoo2012H,Liang2018RedefTCP}。它以特定的次序执行测试用例集中的测试用例，旨在更早发现测试用例集中失败的测试用例。
+例如，谷歌~\cite{elbaum2014techniques}和微软~\cite{Srivastava2002T}报告了RTP在工业中的使用。
+更正式地说，一个测试用例集$T$是一组（无序的）测试用例，而RTP技术产生一个测试用例的\emph{执行次序}——测试用例集中测试用例的排列--按其顺序执行测试用例。
+自20多年前的开创性工作以来，多种RTP技术已经被提出~\cite{Wong1997TCP, Rothermel1999TCP, Elbaum2000MR, rothermel2001prioritizing}，并获得了成百上千的引用。
+
+RTP技术经常与\emph{随机测试用例排序（简称随机RTP）}进行比较。
+我们检查了~\cite{RTPTheoryWebsite}关于RTP的100篇引用率最高的论文，发现\litReviewCompareYes{}论文都使用随机RTP作为比较基准。
+虽然随机RTP的性能往往比先进的技术差，但最近的论文仍然使用随机RTP，是因为它的开销很小，并且它在某些情况下可能表现良好。
+我们另外检查了在最新的顶级测试会议（ICST和ISSTA 2020/2021）上发表的论文，发现50\%（2/4）的RTP论文~\cite{Cheng2021ZMX,Elsner2021HPR,Mondal2021N,Peng2020IRTCP}使用了随机RTP。
+虽然随机RTP作为基线算法已经使用了20多年，但现有工作所有的评估都是经验性的，通过对一个有$n$个测试用例的测试用例集的$n!$个执行顺序进行随机抽样。
+现有工作所选的样本量各不相同（例如20、50、100、200、1000），与$n$没有明确的关联；有些论文没有报告样本量~\cite{RTPTheoryWebsite}。
+然而，此前没有任何工作提出过对随机RTP的理论分析。
+
+在总结我们的分析之前，我们先介绍一下RTP研究中最常用的一些指标和情景。
+我们首先介绍一些术语。\emph{失败}是指一个失败的测试，\emph{缺陷}是指失败的根本原因（代码中的错误），如果一个失败是由一个缺陷引起的，我们就说这个失败\emph{\detects}到这个故障~\cite{Rothermel1999TCP}。
+一般来说，许多失败可能会\detect{}同一个缺陷，而一个缺陷可能会\detect{}许多缺陷。
+我们通过一个 \emph{\mappingMatrix}来捕捉失败和缺陷之间的关系。
+为了比较RTP技术，研究人员量化了测试用例执行次序找到所有的 \emph{缺陷}的速度（注意是缺陷而不是失败，因为找到许多\detect{}同一缺陷的失败的价值不如找到少数可以\detect{}许多缺陷的失败的价值）。
+
+RTP评估涉及三个方面。RTP指标、\mappingMatrix{}和允许的测试执行顺序。
+最广泛使用的指标是平均缺陷检测速率，（\APFDFull）~\cite{rothermel2001prioritizing}，简称为\APFD{}。
+另一个流行的指标是代价感知型APFD（\APFDcFull）~\cite{elbaum2001incorporating}，简称为\APFDc{}。
+章节~\ref{sec:preliminaries}根据\mappingMatrix{}正式定义了这些指标；每个指标都给一个测试用例执行次序分配一个0到1的值，值越高表示执行次序越好。
+传统的RTP研究使用人造的缺陷，可以精确地推导出可以任意一个情形下的 \mappingMatrix{}~\cite{rothermel2002impact,elbaum2003understanding,kim2005empirical}。
+最近的RTP研究大多使用真实的失败，例如分析持续集成系统的真实回归测试运行~\cite{Peng2020IRTCP,Elsner2021HPR,mattis2020RTPTorrent,lu2016does,Liang2018RedefTCP,elbaum2014techniques}，使得精确导出\mappingMatrix{}相当困难。
+因此，越来越流行的\mappingMatrices{}是：\emph{\mappingAllToOne}，其中所有的失败都映射到同一个缺陷，以及\emph{\mappingOneToOne}，其中每个失败都映射到一个不同的缺陷。
+
+为了描述允许的测试用例执行次序，我们注意到真实的测试用例集经常对测试用例进行分区，例如，在JUnit~\cite{2021JUnit}中，每个测试方法属于一个测试类。
+传统的研究忽略了这种分区，允许$n$个测试的所有$n!$个测试用例执行次序（简称$\alltorders$）。
+我们引入了\emph{\compatible{}}\footnote{我们最初的术语是\emph{类-兼容}~\cite{wei2021probabilistic}，因为我们当时认为只有测试类中的测试方法才是测试用例，但这个概念很容易被推广到其他类型的测试用例中。} 测试用例执行次序（简称$\consecutivetorders$），即考虑测试用例的分区——只允许没有不同分区的测试用例交错执行这种情况的测试用例执行次序。
+
+我们提出了首个适用于RTP研究中最常使用的情况的随机RTP的理论分析。
+我们介绍了一种算法，用于高效计算\APFD{}的准确概率质量函数（Probability Mass Functions，简称\distribution{}s），适用于所有\mappingMatrices{}和$\alltorders$。
+我们在含有最多Java项目的RTP数据集的基准上证明了我们算法的效率~\cite{Peng2020IRTCP}。
+对于常见的\mappingAllToOne{}和\mappingOneToOne{}情况，我们分别进一步推导出一个闭合公式和一个良好的近似公式。
+对于一般的\mappingMatrix{}，对于$\alltorders$和$\consecutivetorders$，我们还推导出了闭合公式，用于计算\APFD{}和 \APFDc{}的期望值，并在各种情况下对这些值进行了比较。
+有趣的是，平均来说，$\alltorders$在某些情况下可以比$\consecutivetorders$表现得好得多（最多到$\half$），但在任何情况下都不会差很多（只到$\inlinefrac{1}{6}$）；章节~\ref{sec:comparison}介绍了这种比较，包括两个接近极限的情况（$\half$和$\inlinefrac{1}{6}$）。
+
+我们最后得出了两个有关\APFD{}和\APFDc{}的有趣的性质。
+利用这些性质，我们重新审视了一些关于RTP的有高引用量的论文，发现由于样本量不足等可能原因，其中一些提出的结果可能是存在偏差的。
+总的来说，我们的理论分析为先前工作中广泛使用的随机RTP提供了新的见解，打破了只能使用经验性采样评估随机RTP的传统。
+我们的结果表明，在许多情况下，研究人员不需要进行采样，而是可以使用简单的公式或算法来获得随机RTP指标的更精确的统计数据。
+
+\Comment{
 \section{哼哼}
 \subsection{啊啊啊}
 \subsubsection{啊啊啊啊啊}
+
 
 引用如\cite{Wilt2010beamsearch}，引用表如表\ref{tab:input_output_r}，引用图如图\ref{fig:sample}。
 
@@ -29,3 +79,4 @@
     \caption{示例图片}
     \label{fig:sample}
 \end{figure}
+}

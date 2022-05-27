@@ -1,26 +1,34 @@
 \chapter*{\bfseries 摘要}
 
-壹壹肆伍壹肆是一个重大问题。壹壹肆伍壹肆是一个重大问题。壹壹肆伍壹肆是一个重大问题。壹壹肆伍壹肆是一个重大问题。壹壹肆伍壹肆是一个重大问题。
+回归测试是一项重要的测试活动，其通过运行测试用例集中的测试用例来检查软件的变化，以告知开发人员这些变化是否会导致测试失败。
+测试用例排序（Regression Test Prioritization，简称RTP）旨在通过对测试集进行排序，使可能失败的测试提前运行，从而更快地通知开发人员。
+许多RTP已经被提出，并经常将随机测试用例排序（简称随机RTP）作为基线算法进行比较。对一个有$n$个测试用例的测试用例集，随机 RTP可能产生$n!$个不同的测试用例执行次序。现有的研究工作在比较时采用从$n!$个不同测试用例执行次序中随机抽样的方法。
+然而，目前还没有对随机RTP的理论分析。
 
-本文壹玖壹玖捌壹零。本文壹玖壹玖捌壹零。本文壹玖壹玖捌壹零。本文壹玖壹玖捌壹零。本文壹玖壹玖捌壹零。本文壹玖壹玖捌壹零。本文壹玖壹玖捌壹零。
+我们提出了第一个对随机RTP的理论分析，为其在RTP研究中常用的指标和场景中推导出概率质量函数和期望值。
+利用我们的分析，我们重新审视了一些引用量最高的RTP论文，发现其中的一些有关随机RTP的结果由于抽样不足等可能原因并不符合理论结果。
+未来的RTP研究可以利用我们的分析，不需要使用随机抽样，而是使用我们的简单公式或算法，与随机RTP进行更精确的比较。
 
 \bigskip
 \bigskip
 
-关键词: 壹壹肆，伍壹肆
+关键词: 测试用例排序，随机，理论分析
 
 \chapter*{\bfseries ABSTRACT}
 
 %{\parindent0pt
 
-One one four five one four. One one four five one four. One one four five one four. One one four five one four. One one four five one four.
+Regression testing is an important activity to check software changes by running the tests in a test suite to inform the developers whether the changes lead to test failures.
+Regression test prioritization (RTP) aims to inform the developers faster by ordering the test suite so that tests likely to fail are run earlier.
+Many RTP techniques have been proposed and are often compared with the random RTP baseline by sampling some of the $n!$ different test-suite orders for a test suite with $n$ tests.
+However, there is no theoretical analysis of random RTP. 
 
-One one four five one four. One one four five one four.
-
-Money is all you need. Money is all you need. Money is all you need. Money is all you need. Money is all you need. Money is all you need.
+We present such an analysis, deriving probability mass functions and expected values for metrics and scenarios commonly used in RTP research.
+Using our analysis, we revisit some of the most highly cited RTP papers and find that some presented results may be due to insufficient sampling.
+Future RTP research can leverage our analysis and need not use random sampling but can use our simple formulas or algorithms to more precisely compare with random RTP.
 
 \bigskip
 \bigskip
 
-KEY WORDS: Foo, Bar
+KEY WORDS: Regression Test Prioritization, Random, Analysis
 %}
