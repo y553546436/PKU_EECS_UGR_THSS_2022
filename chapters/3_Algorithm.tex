@@ -1,0 +1,54 @@
+\chapter{\APFD{}的\Distribution}
+
+为了分析指标\APFD{}的\distribution{}。
+我们首先提出一个算法来计算一般情况的$M$下的\APFD{}的\distribution{}，然后我们讨论两个特殊情况，即最近RTP研究中最常见的\mappingAllToOne{}\mappingMatrices{}和\mappingOneToOne{}\mappingMatrices{}。
+
+\section{一般情况下计算\APFD{}的\Distribution{}的算法}\label{sec:dpalgorithm}
+
+为了计算\APFD{}的\distribution{}，一个朴素的算法会将列举所有$n!$测试用例执行次序，并为每个执行次序计算\APFD{}。
+理论上，\APFD{}最多可以取$O(n!)$不同的值，例如，当$m=\sum_{i=1}^nn^i$并且所有$n$个测试用例失败，并且分别\detect 到$n,n^2,\ldots,n^n$个不同的缺陷时，$n!$中的每个执行次序都有一个不同的\APFD{}。
+然而，在实践中，缺陷的数量$m$和失败的数量$k$通常很小，例如，在我们的实验数据集~\cite{Peng2020IRTCP}中，2980个（98\%）\job{}中的2906个有$k\le 10$。
+我们提出了一种算法，以$O(n^2mk\multi k!)$的时间复杂度计算精确的\distribution{}。
+尽管有其中包含$k!$的项，该算法在实践中的运行时间是合理的，对于2906个\job{}中的任何一个都在30秒以内运行结束。
+当$k>10$时，我们可以采用抽样的方法。
+
+接下来我们描述一下我们算法的直觉。
+$sum_{i=1}^m\TF_i$是\APFD{}中唯一依赖于测试用例执行次序的项，所以我们首先计算这个项的分布，然后将其转换为\APFD{}的分布。
+枚举所有的缺陷求和并不能为其带来一个好的递归公式。
+我们算法的关键是，将其转化为\emph{枚举$k$个失败测试用例的位置求和}。
+我们把$sum_{i=1}^m\TF_i$看作是一个\emph{加权和}。
+\begin{equation}\label{TF:weighted:sum}
+\sum_{i=1}^m\TF_i=\sum_{j=1}^kw_j\position_j
+\end{equation}
+其中$\position_j$是执行次序中第j个失败测试用例的位置，$w_j\ge 0$是权重，其计算方式为第$j$个失败测试用例检测到的缺陷数量（算法~\ref{algo:distribution:APFD}的第~\ref{w_i:define}行）。
+例如，考虑一下图~\ref{fig:example}中的测试用例执行次序$o1$。
+$k=4$个失败测试用例的\emph{相对顺序}是$\relativeOrder=\langle\mathrm{C2.t2,C1.t1,C1.t3,C2.t1}\rangle$；我们使用记号$\relativeOrder$来区别于所有$n$个测试用例的执行次序的记号$o$。
+对于这个相对顺序，$w=\langle 1,1,1,0\rangle$，因为$m=3$个缺陷首先由$\mathrm{C2.t2}$、$\mathrm{C1.t1}$和$\mathrm{C1.t3}$检测到。
+对应这个相对顺序$\relativeOrder$的$\position$是$\position=\langle 1,2,3,5\rangle$，因为$\relativeOrder$中的$4$个失败测试用例在执行次序$o1$中出现在这些位置。
+
+对于$\position=\langle\position_1\ldots\position_k\rangle$，如果$1\le\position_1<\ldots<\position_k\le n$，我们称$\position$是\emph{合法}的。
+$\position$和$w=\langle w_1\ldots w_k\rangle$都可以在不同的测试用例执行次序中变化。
+虽然$\position$有$\binom{n}{k}$个有效值，但因为$w$只取决于$\relativeOrder$，我们注意到$w$最多有$k!$个可能值（在实践中$k!\ll \binom{n}{k}$，因为$k\ll n$）。
+因此，我们首先通过枚举$k$个失败测试用例的$k!$种相对顺序来固定$w$。
+然后对于每种相对顺序，计算$\sum_{i=1}^m\TF_i=\sum_{j=1}^kw_j\position_j$的\distribution{}问题等价于\emph{“给定$w$，计算对于每个$s$使得$\sum_{j=1}^kw_j\position_j=s$的有效$\position$的数量"}。这个问题这可以按以下方式递归解决。
+
+我们用$f_{\paramOneInF,\paramTwoInF}(s)$表示满足$1\le \position_1< \ldots < \position_{\paramOneInF}\le \paramTwoInF$且$\sum_{j=1}^{\paramOneInF}w_j\position_j=s$的情况下，$\position_1,\ldots,\position_{\paramOneInF}$的可能取值数量。那么我们要解决的问题就是求出$f_{k,n}(s)$。
+作为基础情况，
+(1)~$\paramOneInF>\paramTwoInF$时$f_{\paramOneInF,\paramTwoInF}(s)=0$，因为$\position_{\paramOneInF}<\paramOneInF$不可能成立。
+(2)~$f_{0,\paramTwoInF}(s)=\mathbf{1}_{s=0}$，其中$\mathbf{1}$是指示函数，因为只有空序列$\langle\rangle$是合法的，并且$\sum_{j=1}^0w_j\position_j=0$。
+对于所有$\paramTwoInF\ge \paramOneInF>0$，$f_{\paramOneInF,\paramTwoInF}(s)$的可能取值数有两种情况。(1)~如果$\position_{\paramOneInF}\le \paramTwoInF-1$，根据定义，这个数等于$f_{\paramOneInF,\paramTwoInF-1}(s)$。(2)~如果$\position_{\paramOneInF}=\paramTwoInF$，$s$的可能数量等于满足$\position_{\paramOneInF-1}\le \position_{\paramOneInF}-1= \paramTwoInF-1$和$\sum_{j=1}^{\paramOneInF-1}w_j\position_j=(\sum_{j=1}^{\paramOneInF}w_j\position_j)-w_{\paramOneInF}\position_{\paramOneInF}=s-w_{\paramOneInF}\paramTwoInF$的情况下$\position_1,\ldots,\position_{\paramOneInF-1}$的可能取值数，也就是$f_{\paramOneInF-1,\paramTwoInF-1}(s- w_{\paramOneInF}\paramTwoInF)$。
+总的来说，我们有
+\begin{equation}\label{f:recursive:equation}
+f_{\paramOneInF,\paramTwoInF}(s)=\left\{
+\begin{array}{lc}
+0 & \quad\paramOneInF>\paramTwoInF\\
+\mathbf{1}_{s=0} & \quad\paramOneInF=0\\
+f_{\paramOneInF,\paramTwoInF-1}(s)+f_{\paramOneInF-1,\paramTwoInF-1}(s-w_{\paramOneInF}\paramTwoInF) & \quad\mathrm{其它情况}
+\end{array}
+\right.
+\end{equation}
+在解出$f_{k,n}$之后，我们得到了对于每种失败测试用例的相对位置的$\sum_{i=1}^m\TF_i$的\distribution{}。
+根据对称性，$k!$种相对顺序都有相同的概率取到，因此我们只需这些\distributions{}的平均，就可以得到对所有测试用例执行次序的$\sum_{i=1}^mTF_i$的\distribution{}。
+最后，我们将$\sum_{i=1}^mTF_i$的\distribution{}转换为\APFD{}的\distribution{}。
+
+\input{chapters/Algorithm}

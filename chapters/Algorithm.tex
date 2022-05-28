@@ -1,0 +1,46 @@
+\begin{algorithm}[t]
+\renewcommand\baselinestretch{0.9}\selectfont
+\caption{计算\APFD{}的\distribution}
+\label{algo:distribution:APFD}
+\textbf{Input:} n,m,M \ccc{测试用例和缺陷的数量, 以及\mappingMatrix{}}\\
+
+\textbf{Output:} $\Output$ \ccc{\APFD{}的\distribution{}: $\Output(x)=\Prob{\APFD{}=x}$}\\
+
+\SetKwFunction{FMain}{PMF}
+\SetKwProg{Fn}{Function}{}{}
+\Fn{\FMain{}\emph{\ccc{主函数; 返回\APFD{}对所有测试用例执行次序的\distribution{}}}}{
+    k = $\mathrm{|\{j|\exists i.\twoParaFunc{M}{j}{i}\}|}$ \ccc{M中失败的数量, 实践中k$\ll$n}\\
+    q = \FuncSty{PMF\_sum()} \ccc{计算$\sum_{i=1}^m\TF_i$的\distribution}\\
+    \KwRet{$\mathrm{\lambda x.q(mn-mnx+\frac{m}{2})}$} \ccc{将$\sum_{i=1}^m\TF_i$的\distribution{}转化为\APFD{}的\distribution{}}
+}
+
+\SetKwFunction{FMain}{PMF\_sum}
+\SetKwProg{Fn}{Function}{}{}
+\Fn{\FMain{}\emph{\ccc{return the \distribution of $\mathrm{\sum_{i=1}^m\TF_i}$ for all orders}}}{
+    $\mathcal{P}$ = $\langle$\FuncSty{PMF\_rorder($\relativeOrder$)}$,\forall \relativeOrder \in perms(\{j|\exists i.\twoParaFunc{M}{j}{i}\})\rangle$ \ccc{枚举所有的相对位置}\label{line:enumerate:o}\\
+    \KwRet{$\mathrm{\lambda x.\sum_{p\in \mathcal{P}}p(x)/|\mathcal{P}|}$} \ccc{将每种相对位置的$\sum_{i=1}^m\TF_i$的\distributions{}做平均}
+}
+
+\SetKwFunction{FMain}{PMF\_rorder}
+\SetKwProg{Fn}{Function}{}{}
+\Fn{\FMain{$\mathrm{\relativeOrder}$}\emph{\ccc{返回对于一种相对位置$\mathrm{\relativeOrder}$，$\mathrm{\sum_{i=1}^m\TF_i}$的\distribution{}}}}{
+    w = $\langle | \{ i | \twoParaFunc{M}{\relativeOrder_j}{i}  \wedge \nexists j'<j. \twoParaFunc{M}{\relativeOrder_{j'}}{i}\} |, \forall j \in 1..k \rangle$
+    \ccc{$\mathrm{w}$是公式\ref{TF:weighted:sum}中的权重}\label{w_i:definition}
+    \\
+    \KwRet{$\lambda s.$\FuncSty{f($\mathrm{w,k,n}$)}$(s)/\binom{n}{k}$} \ccc{$\position$的总共可能取值有$\binom{n}{k}$个}
+}
+
+\ccc{下面的函数应该被记忆化，以避免对重复的w，\paramOneInF，和\paramTwoInF{}组合重复计算}\\
+
+\SetKwFunction{FMain}{f}
+\SetKwProg{Fn}{Function}{}{}
+\Fn{\FMain{$\mathrm{w,\paramOneInF,\paramTwoInF}$}\emph{\ccc{给定w，用公式\ref{f:recursive:equation}计算并返回$\mathrm{f_{\paramOneInF,\paramTwoInF}}$}}}{ 
+    \uIf{$\mathrm{\paramOneInF>\paramTwoInF}$}{
+        \KwRet{$\mathrm{\lambda s.0}$}
+    }
+    \uIf{$\mathrm{\paramOneInF=0}$}{
+        \KwRet{$\mathrm{\lambda s.\mathbf{1}_{s=0}}$}
+    }
+    \KwRet{$\lambda s.$\FuncSty{f($\mathrm{w,\paramOneInF,\paramTwoInF-1}$)}$\mathrm{(s)+}$\FuncSty{f($\mathrm{w,\paramOneInF-1,\paramTwoInF-1}$)}$\mathrm{(s-w_{\paramOneInF}\paramTwoInF)}$}
+}
+\end{algorithm}
