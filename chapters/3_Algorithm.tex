@@ -32,6 +32,8 @@ $\position$和$w=\langle w_1\ldots w_k\rangle$都可以在不同的测试用例�
 因此，我们首先通过枚举$k$个失败测试用例的$k!$种相对顺序来固定$w$。
 然后对于每种相对顺序，计算$\sum_{i=1}^m\TF_i=\sum_{j=1}^kw_j\position_j$的\distribution{}问题等价于\emph{“给定$w$，计算对于每个$s$使得$\sum_{j=1}^kw_j\position_j=s$的有效$\position$的数量"}。这个问题这可以按以下方式递归解决。
 
+\input{chapters/Algorithm}
+
 我们用$f_{\paramOneInF,\paramTwoInF}(s)$表示满足$1\le \position_1< \ldots < \position_{\paramOneInF}\le \paramTwoInF$且$\sum_{j=1}^{\paramOneInF}w_j\position_j=s$的情况下，$\position_1,\ldots,\position_{\paramOneInF}$的可能取值数量。那么我们要解决的问题就是求出$f_{k,n}(s)$。
 作为基础情况，
 (1)~$\paramOneInF>\paramTwoInF$时$f_{\paramOneInF,\paramTwoInF}(s)=0$，因为$\position_{\paramOneInF}<\paramOneInF$不可能成立。
@@ -48,7 +50,100 @@ f_{\paramOneInF,\paramTwoInF-1}(s)+f_{\paramOneInF-1,\paramTwoInF-1}(s-w_{\param
 \right.
 \end{equation}
 在解出$f_{k,n}$之后，我们得到了对于每种失败测试用例的相对位置的$\sum_{i=1}^m\TF_i$的\distribution{}。
-根据对称性，$k!$种相对顺序都有相同的概率取到，因此我们只需这些\distributions{}的平均，就可以得到对所有测试用例执行次序的$\sum_{i=1}^mTF_i$的\distribution{}。
-最后，我们将$\sum_{i=1}^mTF_i$的\distribution{}转换为\APFD{}的\distribution{}。
+根据对称性，$k!$种相对顺序都有相同的概率取到，因此我们只需这些\distributions{}的平均，就可以得到对所有测试用例执行次序的$\sum_{i=1}^m\TF_i$的\distribution{}。
+最后，我们将$\sum_{i=1}^m\TF_i$的\distribution{}转换为\APFD{}的\distribution{}。
 
-\input{chapters/Algorithm}
+
+接下来我们更详细地描述算法~\ref{algo:distribution:APFD}。
+输入是测试用例的数量$n$，缺陷数$m$，以及 \mappingMatrix{}$M$。
+主函数\FuncSty{PMF}调用\FuncSty{PMF_sum}来获得 $\sum_{i=1}^m\TF_i$ 的\distribution{}，并将其转换为\APFD{} 的\distribution{}。
+函数\FuncSty{PMF\_sum}枚举$k$个失败测试用例的所有相对顺序$\relativeOrder$，调用\FuncSty{PMF\_rorder($\mathrm{\relativeOrder}$)}来获得每个相对顺序的$\sum_{i=1}^m\TF_i$的\distribution{}。并对这些\distributions{}进行平均，得到对所有（相对）执行次序的$\sum_{i=1}^m\TF_i$的分布。
+函数\FuncSty{PMF\_rorder($\mathrm{\relativeOrder}$)}计算公式(\ref{TF:weighted:sum})中的权重$w$，调用 \FuncSty{f(w,k,n)}以得到对于$w$的$f_{k,n}$，并将其转换为$\sum_{i=1}^m\TF_i$的\distribution{}。
+
+我们最后讨论算法~\ref{algo:distribution:APFD}的时间复杂度和实践中的性能。
+算法的主要的运行成本来自于计算函数\FuncSty{f}。
+因为有$O(k!)$种不同的$w$和$0\le \paramOneInF\le k,\paramOneInF\le \paramTwoInF\le n$，我们要为$O(nk\multi k!)$种不同的输入计算\FuncSty{f}。
+通过记忆化，对每种输入只需计算一次\FuncSty{f}。
+每次计算需要$O(nm)$，因为$|\mathrm{support}(f_{\paramOneInF,\paramTwoInF})|=O(nm)$（对于每个$1\le i\le m$，我们有$1\le \TF_i\le n$）。
+ 因此，对所有输入计算\FuncSty{f}的成本是$O(n^2mk\multi k!)$。
+算法中的其他成本低于\FuncSty{f}的成本；因此，算法~\ref{algo:distribution:APFD}的总体时间复杂度为$O(n^2mk\multi k!)$。
+
+\newcommand{\mysubsubsection}[1]{\noindent\textbf{#1:}}
+\mysubsubsection{实现}
+虽然自上而下的递归使算法展示起来更清楚，但为了获得更好的性能，我们的实现使用自下而上的动态规划来计算\FuncSty{f}。
+我们的实现只使用了\CPPLine{}行的C++代码。
+
+\mysubsubsection{数据集}
+我们使用拥有最多Java项目的RTP数据集~\cite{Peng2020IRTCP}对算法进行评估。
+在这个数据集中，每个测试用例是一个测试类，每个\class{}是一个Maven模块~\cite{2020Maven}。
+该数据集有2980个\job{}，其中2906个（98\%）有$k\le 10$。
+对于每个$k\le 10$，我们从数据集中选择具有最大测试用例数量（$n$）的\job{}。
+我们还合成了一个有2118（数据集中最大的测试用例数）个测试用例、10个失败的虚拟\job{}。
+我们在所选的\job{}上使用了\mappingAllToOne{}和 \mappingOneToOne{}的\mappingMatrices{}。
+
+\input{chapters/table}
+
+\mysubsubsection{评估}
+如\Table~\ref{tab:numbersforjobs}所示，对于所有真实的\job{}，代码在30秒内运行结束（在一台普通的笔记本电脑上）；对于合成的\job{}，在\mappingAllToOne{}和\mappingOneToOne{}的情况需要更多时间，但仍分别只用了33秒和4分钟。
+
+\section{特殊情况下\APFD{}的\Distributions{}}
+
+我们在Section~\ref{sec:introduction}中提到，最近的RTP研究使用了真实的失败和缺陷，使用了两种\mappingMatrices{}：\mappingAllToOne{}和\mappingOneToOne{}。
+我们接下来讨论这两种常用情况下的\APFD{}的\distributions{}。
+
+\noindent\textbf{\allToOneSec{} \mappingAllToOne{}:}
+我们首先为\mappingAllToOne推导出\APFD{}的\distribution{}。
+在这种情况下，$m=1$，$k\ge 1$，在公式~(\ref{TF:weighted:sum})中$w_1=1,\forall j>1.w_j=0$。
+因此，对于$\paramOneInF>1$，递归公式~(\ref{f:recursive:equation})变成$f_{\paramOneInF,\paramTwoInF}(s)=f_{\paramOneInF,\paramTwoInF-1}(s)+f_{\paramOneInF-1,\paramTwoInF-1}(s)$，这与帕斯卡三角形形式相似。
+这一观察提示我们，对于\mappingAllToOne{}的 \APFD{}的\distribution{}可能有一个带有二项式系数的封闭解。
+
+\begin{mytheorem}[\mappingAllToOne{}\mappingMatrixThe{}情况下\APFD{}的\distribution{}]\label{distribution-apfd-one2one}
+\begin{equation}\label{formula-distribution-apfd-one2one}
+    \Prob{\APFD{}= 1-\frac{s}{n}+\frac{1}{2n}}=\frac{\binom{n-s}{k-1}}{\binom{n}{k}},s\in\{1,2,\ldots,n-k+1\}
+\end{equation}
+\end{mytheorem}
+\begin{proof}
+对于\mappingAllToOne{}，\APFD{}值仅取决于$\TF_1$，这本质上是公式~（\ref{\TF:weighted:sum}）中的$\position_1$。
+对于$1\le s\le n-k+1$，只要$s=\position_1<\ldots<\position_k\le n$，$\TF_1=s$就成立。
+为了满足这个条件，我们只需要在位置$s$之后选择$k-1$个位置。
+因此，在$\binom{n}{k}$种从$n$个位置中选$k$个位置的方法中有$\binom{n-s}{k-1}$个满足条件，所以$\Prob{\TF_1= s}=\inlinefrac{\binom{n-s}{k-1}}{\binom{n}{k}}$，公式（\ref{formula-distribution-apfd-one2one}）可以由此直接得出。
+\end{proof}
+
+通过\formula{formula-distribution-apfd-one2one}，我们可以用$O(n)$的时间来计算\APFD{}在\mappingAllToOne{}情况下的\distribution{}。
+我们可以从$\binom{k-1}{k-1}=1$开始，用递推公式$\binom{n'+1}{k-1}=\frac{n'+1}{n'-k+2}\binom{n'}{k-1}, n'\ge k-1$，迭代计算所需的二项系数，得到$\binom{n}{k}=\frac{n}{k}\binom{n-1}{k-1}$。
+
+\noindent\textbf{\oneToOneSec{} \mappingOneToOne{}:} 我们接下来考虑\mappingOneToOne{}下\APFD{}的\distribution{}。
+在这种情况下，$m=k$，每个失败的测试用例都会发现一个不同的缺陷，所以对于每种$k$个失败测试用例的相对顺序，在公式（\ref{TF:weighted:sum}）中有$\forall j.w_j=1$。
+因此，运行算法~\ref{algo:distribution:APFD}并对$w$进行记忆化，复杂度变为$O(n^2k^2+k!)$。
+$k!$的项来自于遍历所有的相对顺序。
+如果我们事先检查\mappingMatrix{}是否为\mappingOneToOne{}，我们就可以避免$k!$的项，所以复杂度是$O(n^2k^2)$。
+
+此外，考虑到当$\forall j.w_j=1$时的公式（\ref{f:recursive:equation}），$f_{k,n}$本质上建模了这样的问题：\emph{“计算将整数$s$拆分成$k$个$\{1,2,\ldots,n\}$中不同的整数相加的情况数量”}。
+具体来说，$f_{\paramOneInF,\paramTwoInF}(s)$可以被看作将$s$拆分成$\paramOneInF$个$\{1,2,\ldots,\paramTwoInF\}$中不同整数相加的情况数量。
+我们有$f_{\paramOneInF,\paramTwoInF}(s)=f_{\paramOneInF,\paramTwoInF-1}(s)+f_{\paramOneInF-1,\paramTwoInF-1}(s-\paramTwoInF)$，因为拆分出的第$\paramOneInF$个整数或是小于$\paramTwoInF$或是等于$\paramTwoInF$，这两种情况分别对应$f_{\paramOneInF,\paramTwoInF-1}(s)$和$f_{\paramOneInF-1,\paramTwoInF-1}(s-\paramTwoInF)$。
+据我们所知，这个问题没有已知的封闭解。
+考虑到在我们的评估数据集中，99.8\%（2975/2980）的测试场景有$n^2k^2< 10^9$，$O(n^2k^2)$算法对于几乎所有实际情况是足够高效的。
+
+\noindent\textbf{近似解:} 此外，我们可以通过忽略“不同数字”的约束来近似计算\distribution{}，即：\emph{“计算将整数$s$拆分成$k$个$\{1,2,\ldots,n\}$中整数相加的情况数量”}。
+这个问题有一个很简洁的生成函数$(x+x^2+\ldots+x^n)^k$，其中$x^s$的系数是拆分的数量~\cite{stanley2011enumerative}。
+\begin{equation}\label{approximation:APFD:generating:function:coefficient}
+    \sum_{i=0}^{\lfloor \frac{s-k}{n}\rfloor}\binom{k}{i}(-1)^i\binom{s-ni-1}{k-1}
+\end{equation}
+我们可以用两种不同的算法来计算这些系数。
+第一种算法首先用帕斯卡尔三角法预计算二项式系数，然后用公式~（\ref{approximation:APFD: generating:function:coefficient}）计算所有系数。
+第一步需要$O(nk^2)$，因为$s-ni-1\le nk$和$i\le k$。
+第二步需要$O(nk^2)$，因为每个$O(nk)$的系数需要$O(k)$来计算（$\lfloor\frac{s-k}{n}\rfloor\le k$）。
+因此，第一个算法的总体时间复杂度为$O(nk^2)$。
+第二种算法直接用快速傅里叶变换~\cite{brigham1988fast}计算生成函数，其首先将$x+x^2+\ldots+x^n$转换为点值表示，将每个点值计算为第$k$次方，然后插值得到系数。
+第二个算法需要$O(nk\log(nk))$，因为多项式的长度是$O(nk)$。
+比较这两个算法的时间复杂度，当$k$与$n$相比很小时（即$k-\log k<\log n$），第一种算法更好，否则第二种算法更好。
+
+我们用准确的\distribution{}和近似得到的\distribution{}之间的Jensen–Shannon（JS）距离~\cite{endres2003new}来评估我们的近似解。我们在与章节~\ref{sec:dpalgorithm}中相同的真实\job{}中评估了近似解。如表~\ref{tab:numbersforjobs}所示，我们的近似解具有较小JS距离，其中JS距离最大只有\Num{0.0442，（$n=52,k=9$）}。
+
+\section{\APFDc{}的\Distribution{}}
+
+\APFDc{}的\distribution{}比\APFD{}的\distribution{}更复杂，因为即使是最简单的\mappingAllToOne{}\mappingMatrix{}，\APFDc{}的可能值的数量可以是$\Omega(2^n)$。
+例如，考虑$n$个测试用例，代价分别为$1,2,4,\ldots,2^{n-1}$，只有一个测试用例失败并且 \detects{}唯一的缺陷。
+ \APFDc{}值取决于在执行次序中位于失败之前的测试用例的代价之和。
+$2^{n-1}$种不同的测试用例的集合可以在失败之前，并且每一个集合都有不同的代价总和。
+即使是对于\Figure~\ref{fig:example}中的例子，\APFDc{}（33）的支持集大小也比\APFD{}（8）大得多。

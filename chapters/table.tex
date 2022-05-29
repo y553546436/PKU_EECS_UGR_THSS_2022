@@ -1,0 +1,25 @@
+\begin{table*}[t]
+\centering
+\vspace{-1em}
+\caption{对于10个最大的\job{}~\cite{Peng2020IRTCP}和一个合成\job{} (TSmax)，测试用例的数量， 失败的数量，算法运行时间（单位ms），和Jensen-Shannon（JS）距离}
+\label{tab:numbersforjobs}
+\begin{tabular}{|l||r|r|r|r||r|}
+\hline
+\multicolumn{1}{|c||}{\textbf{Test}} & \textbf{\#Tests} & \textbf{\#Failures} & \multicolumn{2}{c||}{\textbf{Runtime [ms]}}& \textbf{Jensen-Shannon}  \\
+\multicolumn{1}{|c||}{\textbf{suite}} & \multicolumn{1}{c|}{\textbf{$(n)$}} & \multicolumn{1}{c|}{\textbf{$(k)$}} & \textbf{\mappingAllToOne} &\textbf{\mappingOneToOne} & \multicolumn{1}{c|}{\textbf{distance} (\S3.2.2)} \\
+\hline
+TS1 & 2118 & 1  & 513& 505 & 0.0000\\
+TS2 & 1986 & 2   & 563& 629& 0.0005\\
+TS3 & 2080 & 3   & 617& 871& 0.0003\\
+TS4 & 1929 & 4   & 680& 1147& 0.0004\\
+TS5 & 1795& 5&  731&1408& 0.0006\\
+TS6 & 339& 6&  627&732& 0.0040\\
+TS7 & 465& 7&  678&756& 0.0034\\
+TS8 & 813& 8 & 829&2009&  0.0023\\
+TS9 & 52& 9&  1496 &1846& 0.0442\\
+TS10& 161 & 10&  10989 &27095& 0.0150\\
+\hline
+TSmax & 2118& 10&  32801 &242400& 0.0011\\
+\hline
+\end{tabular}
+\end{table*}

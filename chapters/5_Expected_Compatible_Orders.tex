@@ -1,0 +1,35 @@
+\chapter{考虑所有\Compatible{}测试用例执行次序$\consecutivetorders$时的期望值}
+
+在这一节中，我们考虑$\consecutivetorders$中\APFD{}和\APFDc{}的期望值。
+如第~\ref{sec:preliminaries}节所定义的，\cOmpatible{}测试用例执行次序不交错执行来自不同\class{}的测试用例。
+与$\alltorders$类似，我们首先为$\consecutivetorders$证明一个有用的引理。
+
+\begin{mylemma}\label{lemma:probability_precede_any:compatible}
+对于每个缺陷$i$, (注意如果$t\notin T_i$, $C(t)$可能有另一个$t'\in T_i$) 
+\begin{equation}\label{probability_precede_any:compatible}
+\forall t\notin T_i.\Probn{t< t_{\TF_i}}=\Probn{\forall t'\in T_i.t< t'}=\left\{
+\begin{array}{lc}
+\frac{1}{|\classSet_i|(|T_{i,\classOfTest{t}}|+1)} & \quad\classOfTest{t}\in \classSet_i\\
+\frac{1}{|\classSet_i|+1} & \quad\classOfTest{t}\notin \classSet_i
+\end{array}
+\right.
+\end{equation}
+\end{mylemma}
+\begin{proof}
+对于$\classOfTest{t}\in \classSet_i$的情况，为了使$t\notin T_{i,\classOfTest{t}}$排在所有能\detect{}缺陷$i$的测试用例之前，有两个条件必须成立。
+首先，在$\classSet_i$中的所有\class{}中，$\classOfTest{t}$必须是第一个。根据对称性，$\classSet_i$中的每个\class{}都可以以相同的概率$\frac{1}{|classSet_i|}$成为第一个。
+第二，$t$必须先于$T_{i,\classOfTest{t}}$的所有测试用例，（与引理~\ref{lemma:probability_precede_any}类似）以$\frac{1}{|T_{i,\classOfTest{t}}|+1}$的概率成立。
+这两个条件是独立的，因为它们分别是关于\class{}的顺序和\class{}内的测试用例顺序，而这些顺序是相互独立的。
+因此，$t$先于第一个\detect{}到缺陷$i$的测试用例的概率是$\frac{1}{|\classSet_i|(|T_{i,\classOfTest{t}|+1)}$。
+
+对于$\classOfTest{t}\notin \classSet_i$的情况，只有一个条件——$\classOfTest{t}$先于$\classSet_i$中的所有\class{}，就能使$t$先于第一个\detect{}到$i$的测试用例，这（与引理~\ref{lemma:probability_precede_any}相似）以概率$\frac{1}{|\classSet_i|+1}$发生。
+\end{proof}
+
+\begin{mytheorem}[$\consecutivetorders$中\APFDc{}的期望值]
+\begin{equation}\label{expected_apfdc_no_interleaving}
+\begin{array}{rl}
+\En{\APFDc}=1-\frac{1}{m\multi \Cost{T}}\sum_{i=1}^m\Bigg(&\frac{\sum_{\testClassInFormula \notin \classSet_i}\Cost{T_\testClassInFormula}}{|\classSet_i|+1}+\\
+    &\frac{1}{|\classSet_i|}\sum_{\testClassInFormula \in \classSet_i}\left(\frac{\Cost{T_\testClassInFormula \setminus T_{i,\testClassInFormula}}}{|T_{i,\testClassInFormula}|+1}+\frac{\Cost{T_{i,\testClassInFormula}}}{2|T_{i,\testClassInFormula}|}\right)\Bigg)
+\end{array}
+\end{equation}
+\end{mytheorem}

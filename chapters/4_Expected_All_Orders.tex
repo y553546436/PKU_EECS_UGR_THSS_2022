@@ -1,0 +1,76 @@
+\chapter{考虑所有测试用例执行次序$\alltorders$时的期望值}\label{section:expected}
+
+虽然有些RTP技术的比较使用了完整的样本\distribution{}，但许多人只使用样本的算术平均值。
+接下来我们推导出指标的期望值的公式，以更快地获得平均值，并且消除抽样的不精确性。
+ 
+在这一章中，我们考虑从$\alltorders$中均匀随机选择一个执行次序$o$的情况，允许$n$测试用例的所有$n!$执行次序。
+ 因为\APFD{}是\APFDc{}在$\forall t,t'\in T.\Cost{t}=\Cost{t'}$时的一个特例，我们首先推导\APFDc{}的期望值。
+ 
+我们从一个简单的例子开始，考虑一个只有一个失败测试用例的测试用例集（$k=1$）。
+对于一个随机顺序，该失败可以在任何位置，概率相同。
+直观地说，对所有测试用例执行次序而言失败的平均位置是在序列的中间，因此，\APFD{}和\APFDc{}应该大约是$\half$。
+事实上，我们将证明它们正好是$\half$。
+此外，只要每个缺陷只被一个失败的测试用例\detect{}到（$\forall i.k_i=|T_i|=1$，其中包括 \mappingOneToOne{}），那么 \APFD{}和\APFDc{}的期望值都是$\half$。
+一般来说，\mappingMatrix{}可以更复杂：许多测试用例可以\detect{}同一缺陷，而一个测试用例可以\detect{}许多缺陷。
+为了计算\APFD{}和\APFDc{}的期望值，我们首先证明一个有用的引理。
+
+\begin{mylemma}\label{lemma:probability_precede_any}
+对于每个缺陷$i$,
+\begin{equation}\label{probability_precede_any}
+\forall t\notin T_i.\Proba{t< t_{\TF_i}}=\Proba{\forall t'\in T_i.t< t'}=\frac{1}{k_i+1}
+\end{equation}
+\end{mylemma}
+\begin{proof}
+由于$\TF_i$是执行次序中来自$T_i$的第一个测试用例的位置，$t$先于$t_{\TF_i}$当且仅当$t$先于每个$t'\in T_i$。
+考虑在一个随机执行次序中，每个$t\notin T_i$相对于$T_i$中所有测试用例的位置。
+根据对称性，$t$前面有$T_i$的$0,1,\ldots,k_i$个测试用例的可能性是相同的。
+因此，$t$处于$T_i$的所有$k_i$个测试用例之前的概率是$\frac{1}{k_i+1}$。
+\end{proof}
+我们首先用该引理来计算$\Ea{\APFDc}$。
+\begin{mytheorem}[$\alltorders$中\APFDc{}的期望值]\label{theorem:expected:apfdc}
+\begin{equation}\label{expected_apfdc}
+\Ea{\APFDc}=1-\frac{\sum_{i=1}^m\left(\frac{\Cost{T\setminus T_i}}{k_i+1}+\frac{\Cost{T_i}}{2k_i}\right)}{m\multi \Cost{T}}
+\end{equation}
+\end{mytheorem}
+\begin{proof}
+由\formula{definition_apfdc}，\APFDc{}中的两个关键项是$\Cost{t_{\TF_i}$和$\sum_{j=\TF_i}^n\Cost{t_j}$。
+根据对称性，任何测试用例$t\in T_i$都可以以$frac1{k_i}$的概率是执行次序中的第一个，或者说$t=t_{TF_i}$。因此
+\begin{equation}\label{apfdc_intermidiate1}
+    \Ea{\Cost{t_{\TF_i}}}=\sum_{t\in T_i} \Prob{t = t_{\TF_i}}\Cost{t} = \frac{\Cost{T_i}}{k_i}
+\end{equation}
+接下来，考虑到$\sum_{j=\TF_i}^n\Cost{t_j}=\sum_{t\in T}\Cost{t}\mathbf{1}_{t_{\TF_i}\le t}$也可以按$\sum_{t\in T_i}\Cost{t}\mathbf{1}_{t_{\TF_i}\le t}+\sum_{t\notin T_i}\Cost{t}\mathbf{1}_{t_{\TF_i}\le t}$计算。
+对于每个测试用例$t\in T_i$，根据定义，$t_{\TF_i}\le t$，所以$\forall t\in T_i.\Ea{\mathbf{1}_{t_{\TF_i}\le t}}=1$。
+对于每一个测试用例$t\notin T_i$，有$\Ea{\mathbf{1}_{t_{\TF_i}\le t}}=\Proba{t_{\TF_i}\le t}=1-\Proba{t< t_{\TF_i}}=\frac{k_i}{k_i+1}$。
+最后一个等式源于引理~\ref{lemma:probability_precede_any}。
+因此，根据期望的线性，我们得到
+\begin{equation}\label{apfdc_intermidiate2}
+    \Ea{\sum_{j=\TF_i}^n\Cost{t_j}}=\Cost{T_i}+\frac{k_i}{k_i+1}\Cost{T\setminus T_i}
+\end{equation}
+
+从公式(\ref{definition_apfdc})，(\ref{apfdc_intermidiate1})，和(\ref{apfdc_intermidiate2})，我们得到\formula{expected_apfdc}。
+\end{proof}
+\begin{mycorollary}[$\alltorders$中\APFD{}的期望值]
+\begin{equation}\label{expected_apfd}
+    \Ea{\APFD}=1-\frac{(n+1)\sum_{i=1}^m \frac{1}{k_i+1}}{nm}+\frac{1}{2n}
+\end{equation}
+\end{mycorollary}
+\ShowCorollaryProof{
+\begin{proof}
+在\formula{expected_apfdc}中令$\forall t,t'\in T.\Cost{t}=\Cost{t'}$即得到\formula{expected_apfd}.
+\end{proof}
+}
+重新审视每个缺陷只能由一个失败的测试用例\detect{}的情况，在\formula{expected_apfdc}或\formula{expected_apfd}中令$\forall i.k_i=1$，正好给出$\half=\Ea{\APFD}=\Ea{\APFDc}$。
+事实上，即使是在任何\mappingMatrix{}的一般情况下，我们也会发现这两个期望值很相似，这启发我们推导出以下不等式：
+\begin{mytheorem}[$\alltorders$中\APFD{}和\APFDc{}的期望差异]\label{difference_with_interleaving}
+\begin{equation}
+    -\frac{1}{12}<\Ea{\APFD}-\Ea{\APFDc}<\frac{1}{2n}
+\end{equation}
+\end{mytheorem}
+\begin{proof}
+从公式(\ref{expected_apfdc})和(\ref{expected_apfd})中，我们有$\Ea{\APFD}-\Ea{\APFDc}=\Delta_{\APFDc{}}-\Delta_{\APFD{}}+\frac{1}{2n}$，其中$\Delta_{\APFDc{}}=\frac{\sum_{i=1}^m(\frac{1}{2k_i}-\frac{1}{k_i+1})\Cost{T_i}}{m\multi \Cost{T}}$以及$\Delta_{\APFD{}}=\frac{\sum_{i=1}^m\frac{1}{k_i+1}}{nm}$。
+因为$k_i\ge 1$，我们有$-\frac{1}{12}\le\frac{1}{2k_i}-\frac{1}{k_i+1}\le 0$（使用基本微积分可以推导出，最小值在$k_i=2$或$k_i=3$时取到）。这一事实与$\Cost{T_i}\le \Cost{T}$结合，可以得出$-\frac{1}{12}\le \Delta_{\APFDc{}}\le 0$。
+因为$k_i\ge 1$，我们也有$0<\frac{1}{k_i+1}\le \frac{1}{2}$，因而可以得出$0< \Delta_{\APFD{}}\le \frac{1}{2n}$。
+因此，我们有$-\frac{1}{12}\le \Delta_{\APFDc{}}-\Delta_{\APFD{}}+\frac{1}{2n}< \frac{1}{2n}$。
+然而，$\Delta_{\APFDc{}}-\Delta_{\APFD{}}+\frac{1}{2n}=-\frac{1}{12}$需要$\Delta_{\APFD{}}=\frac{1}{2n}$，因而$\forall i.k_i=1$，而在这种情况下$\Delta_{\APFDc{}}=0$以及$\Delta_{\APFDc{}}-\Delta_{\APFD{}}+\frac{1}{2n}=0\ne -\frac{1}{12}$。
+因此，等号不能成立，所以$-\frac{1}{12}<\Ea{\APFD}-\Ea{\APFDc}<\frac{1}{2n}$。
+\end{proof}
